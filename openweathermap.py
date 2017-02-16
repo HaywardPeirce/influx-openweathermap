@@ -29,7 +29,7 @@ def getWeatherData(cityid):
     
     response = requests.get(requestURL)
     
-    data = json.loads(response)
+    data = json.loads(response.text)
     
     return data
     
