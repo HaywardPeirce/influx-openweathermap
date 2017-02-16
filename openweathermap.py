@@ -1,6 +1,7 @@
 import configparser
 import requests
 import json
+import time
 from influxdb import InfluxDBClient
 from influxdb.exceptions import InfluxDBClientError, InfluxDBServerError
 from requests.exceptions import ConnectionError
@@ -56,6 +57,8 @@ def sendInfluxData(json_data):
             
 def main():
     sendInfluxData(getWeatherData(cityid))
+    
+    time.sleep(delay)
     
 if __name__ == '__main__':
     main()
