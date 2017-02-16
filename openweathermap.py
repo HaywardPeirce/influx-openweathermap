@@ -29,7 +29,9 @@ def getWeatherData(cityid):
     
     response = requests.get(requestURL)
     
-    return response.json()
+    data = json.loads(response)
+    
+    return data
     
 def sendInfluxData(json_data):
         
