@@ -1,5 +1,6 @@
 import configparser
 import requests
+import urllib2
 import json
 import time
 from influxdb import InfluxDBClient
@@ -27,34 +28,34 @@ def getWeatherData(cityid):
     
     requestURL = 'http://api.openweathermap.org/data/2.5/weather?id=' + str(cityid) + '&APPID=' + weatherapikey
     
-    response = requests.get(requestURL)
+    response = urllib2.urlopen(requestURL).read()
     
-    data = json.loads(response.text)
+    data = json.loads(response)
     
     return data
     
 def sendInfluxData(json_data):
         
-        if output:
-            print(json_data)
-            
-        try:
+    if output:
+        print(json_data)
+        
+    try:
+        influx_client.write_points(json_data)
+    except (InfluxDBClientError, ConnectionError, InfluxDBServerError) as e:
+        if hasattr(e, 'code') and e.code == 404:
+
+            print('Database {} Does Not Exist.  Attempting To Create'.format(influxDatabase))
+
+            influx_client.create_database(influxDatabase)
             influx_client.write_points(json_data)
-        except (InfluxDBClientError, ConnectionError, InfluxDBServerError) as e:
-            if hasattr(e, 'code') and e.code == 404:
 
-                print('Database {} Does Not Exist.  Attempting To Create'.format(influxDatabase))
+            return
 
-                influx_client.create_database(influxDatabase)
-                influx_client.write_points(json_data)
+        print('ERROR: Failed To Write To InfluxDB')
+        print(e)
 
-                return
-
-            print('ERROR: Failed To Write To InfluxDB')
-            print(e)
-
-        if output:
-            print('Written To Influx: {}'.format(json_data))
+    if output:
+        print('Written To Influx: {}'.format(json_data))
             
             
 def main():
