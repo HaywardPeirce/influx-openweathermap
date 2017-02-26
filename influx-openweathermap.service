@@ -9,7 +9,7 @@ WorkingDirectory=/home/grafana/influx-openweathermap
 ExecStart=/usr/bin/python3 openweathermap.py
 
 # Timeout for start up/shut down
-#TimeoutSec=300
+TimeoutSec=320
 
 Restart=always
 RestartSec=3
